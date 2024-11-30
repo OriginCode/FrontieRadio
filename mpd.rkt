@@ -3,50 +3,53 @@
 (require racket/contract
          racket/tcp
          racket/async-channel
-         racket/string)
+         racket/string
+         racket/match)
 
 (provide mpd-connection?
          mpd-connect
          mpd-close-connection
-         mpd-connection-incoming
          mpd-currentsong)
 
-(struct mpd-connection (in-port out-port in-channel))
+(struct mpd-connection (in-port out-port))
 
 (define/contract (mpd-connect [hostname "localhost"] [port 6600])
   (->* () (string? port-number?) mpd-connection?)
   (define-values (in-port out-port) (tcp-connect hostname port))
   (read-line in-port)
   (file-stream-buffer-mode out-port 'line)
-  (define in-channel (make-async-channel))
-  (define connection (mpd-connection in-port out-port in-channel))
-  (define (fetch-response ls)
-    (define line (read-line in-port))
-    (if (equal? line "OK")
-        ls
-        (fetch-response (cons line ls))))
-  (thread (λ ()
-            (let loop ()
-              (sync in-port)
-              (async-channel-put in-channel (fetch-response (list)))
-              (loop))))
-  connection)
+  (mpd-connection in-port out-port))
 
 (define/contract (mpd-close-connection connection)
   (-> mpd-connection? void?)
   (close-input-port (mpd-connection-in-port connection))
   (close-output-port (mpd-connection-out-port connection)))
 
+(define/contract (mpd-parse-response lines)
+  (-> (listof string?) (hash/c symbol? string?))
+  (make-hash
+   (for/list ([line lines])
+    (match line
+      [(regexp #rx"^(.+): (.+)$" (list _ key val))
+       (cons (string->symbol key) val)]
+      [_ (error 'mpd-parse-response "failed to parse response from MPD")]))))
+
+(define/contract (mpd-fetch-response connection lines)
+  (-> mpd-connection? (listof string?) (hash/c symbol? string?))
+  (define line (read-line (mpd-connection-in-port connection)))
+  (if (equal? line "OK")
+      (mpd-parse-response lines)
+      (mpd-fetch-response connection (cons line lines))))
+
 (define/contract (mpd-command connection command)
-  (-> mpd-connection? string? void?)
+  (-> mpd-connection? string? (hash/c symbol? string?))
   (fprintf (mpd-connection-out-port connection)
            "~a\r\n"
-           command))
-
-(define/contract (mpd-connection-incoming connection)
-  (-> mpd-connection? async-channel?)
-  (mpd-connection-in-channel connection))
+           command)
+  (mpd-fetch-response connection (list)))
 
 (define/contract (mpd-currentsong connection)
-  (-> mpd-connection? void?)
+  (-> mpd-connection? (hash/c symbol? string?))
   (mpd-command connection "currentsong"))
+
+(mpd-currentsong (mpd-connect))
