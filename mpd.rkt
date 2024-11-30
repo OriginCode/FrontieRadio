@@ -1,15 +1,18 @@
 #lang racket/base
 
+(provide mpd-connection?
+         mpd-connect
+         mpd-close-connection
+         mpd-currentsong)
+ 
 (require racket/contract
          racket/tcp
          racket/async-channel
          racket/string
          racket/match)
 
-(provide mpd-connection?
-         mpd-connect
-         mpd-close-connection
-         mpd-currentsong)
+(module+ test
+  (require rackunit))
 
 (struct mpd-connection (in-port out-port))
 
@@ -37,9 +40,10 @@
 (define/contract (mpd-fetch-response connection lines)
   (-> mpd-connection? (listof string?) (hash/c symbol? string?))
   (define line (read-line (mpd-connection-in-port connection)))
-  (if (equal? line "OK")
-      (mpd-parse-response lines)
-      (mpd-fetch-response connection (cons line lines))))
+  (match line
+    ["OK" (mpd-parse-response lines)]
+    [(regexp #rx"^ACK (.*)" (list _ errmsg)) (error 'mpd-fetch-response errmsg)]
+    [_ (mpd-fetch-response connection (cons line lines))]))
 
 (define/contract (mpd-command connection command)
   (-> mpd-connection? string? (hash/c symbol? string?))
@@ -52,4 +56,6 @@
   (-> mpd-connection? (hash/c symbol? string?))
   (mpd-command connection "currentsong"))
 
-(mpd-currentsong (mpd-connect))
+(module+ test
+  (define conn (mpd-connect))
+  (check-not-exn (λ () (mpd-currentsong conn))))
