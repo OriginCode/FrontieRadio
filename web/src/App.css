@@ -1,0 +1,18 @@
+* {
+  font-family: monospace;
+  font-size: 20px;
+  color: #83a598;
+}
+
+body {
+  background-color: #1d2021;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  flex-direction: column;
+}
