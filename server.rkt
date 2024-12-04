@@ -10,16 +10,18 @@
 (define (connection-handler c state)
   (displayln "connection received")
   (let loop ([previnfo #f])
-    (define currinfo (hash 'current (mpd-currentsong mpd-conn)
-                           'next (mpd-nextsong mpd-conn)))
-    (if (equal? previnfo currinfo) (loop currinfo) (ws-send! c (jsexpr->bytes currinfo)))
+    (define currinfo
+      (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
+    (if (equal? previnfo currinfo)
+        (loop currinfo)
+        (ws-send! c (jsexpr->bytes currinfo)))
     (sleep 5)
     (loop currinfo)))
 
 (define stop-service
-  (ws-serve
-   #:port (string->number (vector-ref (current-command-line-arguments) 0))
-   connection-handler))
+  (ws-serve #:port (string->number (vector-ref (current-command-line-arguments)
+                                               0))
+            connection-handler))
 (printf "Server running. Hit enter to stop service.\n")
 (void (read-line))
 (stop-service)

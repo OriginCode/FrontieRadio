@@ -44,12 +44,12 @@
      (match line
        [(regexp #rx"^(.+): (.+)$" (list _ key val))
         (cons (string->symbol key)
-              (let ([num (string->number val)])
-                (if num num val)))]
+              (let ([num (string->number val)]) (if num num val)))]
        [_ (error 'mpd-parse-response "failed to parse response from MPD")]))))
 
 (define/contract (mpd-fetch-response connection lines)
-  (-> mpd-connection? (listof string?)
+  (-> mpd-connection?
+      (listof string?)
       (listof (hash/c symbol? (or/c string? number?))))
   (define line (read-line (mpd-connection-in-port connection)))
   (match line
@@ -65,15 +65,21 @@
 (define/contract (mpd-currentsong connection)
   (-> mpd-connection? (hash/c symbol? (or/c string? number?)))
   (define currentsong (mpd-command connection "currentsong"))
-  (if (null? currentsong) (hash) (car currentsong)))
+  (if (null? currentsong)
+      (hash)
+      (car currentsong)))
 
 (define/contract (mpd-playlistinfo connection [pos #f])
-  (->* (mpd-connection?) (exact-nonnegative-integer?)
-       (or/c (listof (hash/c symbol? (or/c string? number?))) (hash/c symbol? (or/c string? number?))))
+  (->* (mpd-connection?)
+       (exact-nonnegative-integer?)
+       (or/c (listof (hash/c symbol? (or/c string? number?)))
+             (hash/c symbol? (or/c string? number?))))
   (if pos
-      (let ([playlistinfo
-             (mpd-command connection (format "playlistinfo ~a" pos))])
-        (if (null? playlistinfo) (hash) (car playlistinfo)))
+      (let ([playlistinfo (mpd-command connection
+                                       (format "playlistinfo ~a" pos))])
+        (if (null? playlistinfo)
+            (hash)
+            (car playlistinfo)))
       (mpd-command connection "playlistinfo")))
 
 (define/contract (mpd-status connection)
@@ -84,8 +90,8 @@
   (-> mpd-connection? (hash/c symbol? (or/c string? number?)))
   (define status (mpd-status connection))
   (if (hash-has-key? status 'nextsong)
-   (mpd-playlistinfo connection (hash-ref status 'nextsong))
-   (hash)))
+      (mpd-playlistinfo connection (hash-ref status 'nextsong))
+      (hash)))
 
 (module+ test
   (define conn (mpd-connect))
