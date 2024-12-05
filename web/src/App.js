@@ -39,26 +39,26 @@ function App() {
         <div className="App">
             <div className="main">
                 <div className="info">
-                <div className="flex-item">
-                    <div className="header">
-                        CURRENT PLAYING:
+                    <div className="flex-item">
+                        <div className="header">
+                            CURRENT PLAYING:
+                        </div>
+                        <div className="content">
+                            {lastMessageData ? lastMessageData.current.Artist + " - " + lastMessageData.current.Title : "No song playing"}
+                        </div>
                     </div>
-                    <div className="content">
-                        {lastMessageData ? lastMessageData.current.Artist + " - " + lastMessageData.current.Title : "No song playing"}
+                    <div className="flex-item">
+                        <div className="header">
+                            NEXT SONG:
+                        </div>
+                        <div className="content">
+                            {lastMessageData ?
+                                (Object.keys(lastMessageData.next).length !== 0 ?
+                                    lastMessageData.next.Artist + " - " + lastMessageData.next.Title
+                                    : "No next song")
+                                : "No next song"}
+                        </div>
                     </div>
-                </div>
-                <div className="flex-item">
-                    <div className="header">
-                        NEXT SONG:
-                    </div>
-                    <div className="content">
-                        {lastMessageData ?
-                            (Object.keys(lastMessageData.next).length !== 0 ?
-                                lastMessageData.next.Artist + " - " + lastMessageData.next.Title
-                                : "No next song")
-                            : "No next song"}
-                    </div>
-                </div>
                 </div>
                 <div className="flex-item">
                     <button onClick={playOrPause}>{playing ? "Pause" : "Play"}</button>
