@@ -8,7 +8,8 @@
 (ws-idle-timeout 6000)
 
 (define (connection-handler c state)
-  (displayln "connection received")
+  (define id (gensym 'conn))
+  (displayln (format "~a: connection received" id))
   (thread (λ ()
             (let loop ([previnfo #f])
               (define mpd-conn (mpd-connect))
@@ -23,11 +24,11 @@
     (match (ws-recv c #:payload-type 'text)
       [(? eof-object?) (void)]
       ["ping"
-       (displayln "recv ping")
+       (displayln (format "~a: recv ping" id))
        (ws-send! c "pong")
-       (loop)])
-    (displayln "connection lost")
-    (ws-close! c)))
+       (loop)]))
+  (displayln (format "~a: connection lost" id))
+  (ws-close! c))
 
 (define stop-service
   (ws-serve #:port (string->number (vector-ref (current-command-line-arguments)
