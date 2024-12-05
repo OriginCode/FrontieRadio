@@ -13,8 +13,10 @@
   (thread (λ ()
             (let loop ()
               (define currinfo
-                (hash 'current (mpd-currentsong mpd-conn)
-                      'next (mpd-nextsong mpd-conn)))
+                (hash 'current
+                      (mpd-currentsong mpd-conn)
+                      'next
+                      (mpd-nextsong mpd-conn)))
               (when (not (equal? mpd-info currinfo))
                 (set! mpd-info currinfo))
               (sleep 1)
