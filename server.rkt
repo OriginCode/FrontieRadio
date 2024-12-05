@@ -26,6 +26,13 @@
 (define (connection-handler c state)
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
+  ; initial message
+  (ws-send! c
+            (jsexpr->bytes
+             (hash 'current
+                   (mpd-currentsong mpd-conn)
+                   'next
+                   (mpd-nextsong mpd-conn))))
   (define worker
     (thread (λ ()
               (let loop ()
