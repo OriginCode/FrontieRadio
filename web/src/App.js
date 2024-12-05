@@ -28,7 +28,8 @@ function App() {
                 returnMessage: "pong",
                 timeout: 30000,
                 interval: 3000,
-            }
+            },
+            shouldReconnect: () => true,
         });
     useEffect(() => {
         console.log(lastMessage);
