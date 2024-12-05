@@ -16,7 +16,11 @@ function App() {
                 </tr>
                 <tr align="left">
                     <th scope="row" align="right"><strong>NEXT SONG:&nbsp;</strong></th>
-                    {lastMessageData ? lastMessageData.next.Artist + " - " + lastMessageData.next.Title : "No next song"}
+                    {lastMessageData ?
+                        (Object.keys(lastMessageData.next).length !== 0 ?
+                            lastMessageData.next.Artist + " - " + lastMessageData.next.Title
+                            : "No next song")
+                        : "No next song"}
                 </tr>
                 </tbody>
             </table>
