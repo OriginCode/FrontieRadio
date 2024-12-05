@@ -7,32 +7,30 @@
 
 (ws-idle-timeout 6000)
 
-(define mpd-info #f)
+(define mpd-channel (make-channel))
 (define mpd-conn (mpd-connect))
 (define mpd-worker
   (thread (λ ()
-            (let loop ()
+            (let loop ([previnfo #f])
               (define currinfo
                 (hash 'current
                       (mpd-currentsong mpd-conn)
                       'next
                       (mpd-nextsong mpd-conn)))
-              (when (not (equal? mpd-info currinfo))
-                (set! mpd-info currinfo))
+              (when (not (equal? previnfo currinfo))
+                (displayln (format "mpd: updating info ~a" currinfo))
+                (channel-put mpd-channel currinfo))
               (sleep 1)
-              (loop)))))
+              (loop currinfo)))))
 
 (define (connection-handler c state)
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
   (define worker
     (thread (λ ()
-              (let loop ([previnfo #f])
-                (when (not (equal? previnfo mpd-info))
-                  (displayln (format "~a: sending ~a" id mpd-info))
-                  (ws-send! c (jsexpr->bytes mpd-info)))
-                (sleep 1)
-                (loop mpd-info)))))
+              (let loop ()
+                (ws-send! c (jsexpr->bytes (sync mpd-channel)))
+                (loop)))))
   (let loop ()
     (match (ws-recv c #:payload-type 'text)
       [(? eof-object?) (void)]
