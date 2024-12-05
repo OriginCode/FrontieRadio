@@ -3,6 +3,7 @@
 (provide mpd-connection?
          mpd-connect
          mpd-close-connection
+         mpd-connection-alive?
          mpd-currentsong
          mpd-playlistinfo
          mpd-nextsong)
@@ -29,6 +30,11 @@
   (-> mpd-connection? void?)
   (close-input-port (mpd-connection-in-port connection))
   (close-output-port (mpd-connection-out-port connection)))
+
+(define/contract (mpd-connection-alive? connection)
+  (-> mpd-connection? boolean?)
+  (not (or (port-closed? (mpd-connection-in-port connection))
+           (port-closed? (mpd-connection-out-port connection)))))
 
 (define/contract (mpd-parse-response lines)
   (-> (listof string?) (listof (hash/c symbol? (or/c string? number?))))
