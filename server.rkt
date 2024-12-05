@@ -7,20 +7,29 @@
 
 (ws-idle-timeout 6000)
 
+(define mpd-info #f)
+(define mpd-conn (mpd-connect))
+(define mpd-worker
+  (thread (λ ()
+            (let loop ()
+              (define currinfo
+                (hash 'current (mpd-currentsong mpd-conn)
+                      'next (mpd-nextsong mpd-conn)))
+              (when (not (equal? mpd-info currinfo))
+                (set! mpd-info currinfo))
+              (sleep 1)
+              (loop)))))
+
 (define (connection-handler c state)
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
   (define worker
     (thread (λ ()
               (let loop ([previnfo #f])
-                (define mpd-conn (mpd-connect))
-                (define currinfo
-                  (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
-                (mpd-close-connection mpd-conn)
-                (when (not (equal? previnfo currinfo))
-                  (ws-send! c (jsexpr->bytes currinfo)))
+                (when (not (equal? previnfo mpd-info))
+                  (ws-send! c (jsexpr->bytes mpd-info)))
                 (sleep 1)
-                (loop currinfo)))))
+                (loop mpd-info)))))
   (let loop ()
     (match (ws-recv c #:payload-type 'text)
       [(? eof-object?) (void)]
@@ -39,3 +48,4 @@
 (printf "Server running. Hit enter to stop service.\n")
 (void (read-line))
 (stop-service)
+(kill-thread mpd-worker)
