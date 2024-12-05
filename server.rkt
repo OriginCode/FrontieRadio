@@ -29,6 +29,7 @@
     (thread (λ ()
               (let loop ([previnfo #f])
                 (when (not (equal? previnfo mpd-info))
+                  (displayln (format "~a: sending ~a" id mpd-info))
                   (ws-send! c (jsexpr->bytes mpd-info)))
                 (sleep 1)
                 (loop mpd-info)))))
