@@ -10,16 +10,17 @@
 (define (connection-handler c state)
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
-  (thread (λ ()
-            (let loop ([previnfo #f])
-              (define mpd-conn (mpd-connect))
-              (define currinfo
-                (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
-              (mpd-close-connection mpd-conn)
-              (when (not (equal? previnfo currinfo))
-                (ws-send! c (jsexpr->bytes currinfo)))
-              (sleep 1)
-              (loop currinfo))))
+  (define worker
+    (thread (λ ()
+              (let loop ([previnfo #f])
+                (define mpd-conn (mpd-connect))
+                (define currinfo
+                  (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
+                (mpd-close-connection mpd-conn)
+                (when (not (equal? previnfo currinfo))
+                  (ws-send! c (jsexpr->bytes currinfo)))
+                (sleep 1)
+                (loop currinfo)))))
   (let loop ()
     (match (ws-recv c #:payload-type 'text)
       [(? eof-object?) (void)]
@@ -28,6 +29,7 @@
        (ws-send! c "pong")
        (loop)]))
   (displayln (format "~a: connection lost" id))
+  (kill-thread worker)
   (ws-close! c))
 
 (define stop-service
