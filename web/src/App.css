@@ -1,18 +1,23 @@
 * {
   font-family: monospace;
   font-size: 20px;
-  color: #83a598;
 }
 
 body {
   background-color: #1d2021;
 }
 
-.App {
+.main {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 90vh;
+  flex-direction: column;
+  row-gap: .5em;
+}
+
+.info {
+  display: flex;
   flex-direction: column;
 }
 
@@ -21,6 +26,18 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  column-gap: .5em;
+}
+
+.header {
+  color: #83a598;
+  font-weight: bold;
+  text-align: center;
+}
+
+.content {
+  color: #8ec07c;
+  text-align: center;
 }
 
 #audio {
@@ -34,9 +51,22 @@ button {
   border: none;
   text-decoration: underline;
   text-underline: #83a598;
+  color: #83a598;
 }
 
 button:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+a {
+  color: #83a598;
+  font-size: .8em;
+  text-decoration: underline;
+  text-underline: #83a598;
+}
+
+a:hover {
   font-weight: bold;
   cursor: pointer;
 }

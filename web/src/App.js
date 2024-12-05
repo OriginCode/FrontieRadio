@@ -21,33 +21,52 @@ function App() {
         };
     }, [audio]);
 
-    const {lastMessage} = useWebSocket(WS_URL);
+    const {lastMessage} = useWebSocket(WS_URL,
+        {
+            heartbeat: {
+                message: "ping",
+                returnMessage: "pong",
+                timeout: 30000,
+                interval: 3000,
+            }
+        });
+    useEffect(() => {
+        console.log(lastMessage);
+    }, [lastMessage]);
     let lastMessageData = lastMessage ? JSON.parse(lastMessage.data) : null;
 
     return (
         <div className="App">
-            <div className="flex-item">
-                <div className="header">
-                    <strong>CURRENT PLAYING:&nbsp;</strong>
+            <div className="main">
+                <div className="info">
+                <div className="flex-item">
+                    <div className="header">
+                        CURRENT PLAYING:
+                    </div>
+                    <div className="content">
+                        {lastMessageData ? lastMessageData.current.Artist + " - " + lastMessageData.current.Title : "No song playing"}
+                    </div>
                 </div>
-                <div className="content">
-                    {lastMessageData ? lastMessageData.current.Artist + " - " + lastMessageData.current.Title : "No song playing"}
+                <div className="flex-item">
+                    <div className="header">
+                        NEXT SONG:
+                    </div>
+                    <div className="content">
+                        {lastMessageData ?
+                            (Object.keys(lastMessageData.next).length !== 0 ?
+                                lastMessageData.next.Artist + " - " + lastMessageData.next.Title
+                                : "No next song")
+                            : "No next song"}
+                    </div>
+                </div>
+                </div>
+                <div className="flex-item">
+                    <button onClick={playOrPause}>{playing ? "Pause" : "Play"}</button>
                 </div>
             </div>
-            <div className="flex-item">
-                <div className="header">
-                    <strong>NEXT SONG:&nbsp;</strong>
-                </div>
-                <div className="content">
-                    {lastMessageData ?
-                        (Object.keys(lastMessageData.next).length !== 0 ?
-                            lastMessageData.next.Artist + " - " + lastMessageData.next.Title
-                            : "No next song")
-                        : "No next song"}
-                </div>
-            </div>
-            <div className="flex-item">
-                <button onClick={playOrPause}>{playing ? "Pause" : "Play"}</button>
+            <div className="flex-item about">
+                <a href="https://factoria.origincode.me/OriginCode/frontieradio">Factoria</a>
+                <a href="https://github.com/OriginCode/frontieradio">GitHub</a>
             </div>
         </div>
     );
