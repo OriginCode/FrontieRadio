@@ -9,14 +9,14 @@
 
 (define mpd-channel (make-channel))
 (define mpd-conn (mpd-connect))
+
+(define (resp-info)
+  (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
+
 (define mpd-worker
   (thread (λ ()
             (let loop ([previnfo #f])
-              (define currinfo
-                (hash 'current
-                      (mpd-currentsong mpd-conn)
-                      'next
-                      (mpd-nextsong mpd-conn)))
+              (define currinfo (resp-info))
               (when (not (equal? previnfo currinfo))
                 (displayln (format "mpd: updating info ~a" currinfo))
                 (channel-put mpd-channel currinfo))
@@ -27,12 +27,7 @@
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
   ; initial message
-  (ws-send! c
-            (jsexpr->bytes
-             (hash 'current
-                   (mpd-currentsong mpd-conn)
-                   'next
-                   (mpd-nextsong mpd-conn))))
+  (ws-send! c (jsexpr->bytes (resp-info)))
   (define worker
     (thread (λ ()
               (let loop ()
