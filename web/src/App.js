@@ -27,7 +27,7 @@ function App() {
                 message: "ping",
                 returnMessage: "pong",
                 timeout: 30000,
-                interval: 3000,
+                interval: 5000,
             },
             shouldReconnect: () => true,
         });
