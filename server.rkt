@@ -2,12 +2,13 @@
 
 (require "./mpd.rkt")
 (require racket/match
+	 racket/async-channel
          net/rfc6455
          json)
 
 (ws-idle-timeout 600)
 
-(define mpd-channel (make-channel))
+(define mpd-channel (make-async-channel))
 (define mpd-conn (mpd-connect))
 
 (define (resp-info)
@@ -21,7 +22,7 @@
               (define currinfo (resp-info))
               (when (not (equal? previnfo currinfo))
                 (displayln (format "mpd: updating info ~a" currinfo))
-                (channel-put mpd-channel currinfo))
+                (async-channel-put mpd-channel currinfo))
               (sleep 1)
               (loop currinfo)))))
 
@@ -33,7 +34,9 @@
   (define worker
     (thread (λ ()
               (let loop ()
-                (ws-send! c (jsexpr->bytes (sync mpd-channel)))
+		(define mpd-info (async-channel-try-get mpd-channel))
+                (when (mpd-info)
+		  (ws-send! c (jsexpr->bytes mpd-info)))
                 (loop)))))
   (let loop ()
     (match (ws-recv c #:payload-type 'text)
