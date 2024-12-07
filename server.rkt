@@ -5,7 +5,7 @@
          net/rfc6455
          json)
 
-(ws-idle-timeout 6000)
+(ws-idle-timeout 600)
 
 (define mpd-channel (make-channel))
 (define mpd-conn (mpd-connect))
@@ -16,6 +16,8 @@
 (define mpd-worker
   (thread (λ ()
             (let loop ([previnfo #f])
+              (when (not (mpd-connection-alive? mpd-conn))
+                (set! mpd-conn (mpd-connect)))
               (define currinfo (resp-info))
               (when (not (equal? previnfo currinfo))
                 (displayln (format "mpd: updating info ~a" currinfo))
@@ -51,4 +53,3 @@
 (printf "Server running. Hit enter to stop service.\n")
 (void (read-line))
 (stop-service)
-(kill-thread mpd-worker)
