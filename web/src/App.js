@@ -42,7 +42,7 @@ function App() {
                 <div className="info">
                     <div className="flex-item">
                         <div className="header">
-                            CURRENT PLAYING:
+                            NOW PLAYING:
                         </div>
                         <div className="content">
                             {lastMessageData ?
