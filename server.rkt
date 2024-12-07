@@ -8,6 +8,8 @@
 
 (ws-idle-timeout 600)
 
+(define clients 0)
+
 (define mpd-channel (make-async-channel))
 (define mpd-conn (mpd-connect))
 
@@ -20,7 +22,8 @@
               (when (not (mpd-connection-alive? mpd-conn))
                 (set! mpd-conn (mpd-connect)))
               (define currinfo (resp-info))
-              (when (not (equal? previnfo currinfo))
+              (when (and (not (equal? previnfo currinfo))
+			 (> clients 0))
                 (displayln (format "mpd: updating info ~a" currinfo))
                 (async-channel-put mpd-channel currinfo))
               (sleep 1)
@@ -29,13 +32,14 @@
 (define (connection-handler c state)
   (define id (gensym 'conn))
   (displayln (format "~a: connection received" id))
+  (set! clients (add1 clients))
   ; initial message
   (ws-send! c (jsexpr->bytes (resp-info)))
   (define worker
     (thread (λ ()
               (let loop ()
 		(define mpd-info (async-channel-try-get mpd-channel))
-                (when (mpd-info)
+                (when mpd-info
 		  (ws-send! c (jsexpr->bytes mpd-info)))
                 (loop)))))
   (let loop ()
