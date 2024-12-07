@@ -45,7 +45,11 @@ function App() {
                             CURRENT PLAYING:
                         </div>
                         <div className="content">
-                            {lastMessageData ? lastMessageData.current.Artist + " - " + lastMessageData.current.Title : "No song playing"}
+                            {lastMessageData ?
+                                (Object.keys(lastMessageData.current).length !== 0 ?
+                                    lastMessageData.current.Artist + " - " + lastMessageData.current.Title 
+                                    : "No song playing")
+                                : "No song playing"}
                         </div>
                     </div>
                     <div className="flex-item">
