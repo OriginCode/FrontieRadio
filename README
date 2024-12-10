@@ -7,7 +7,7 @@ anyone needs a MPD protocol library in Racket, you can easily modify the code to
 support more MPD protocol standards.
 
 `server.rkt` includes a simple WebSocket server that updates information
-(current and next song information) and send the information overtime with a
+(current and next song information) and send the information over time with a
 WebSocket connection.
 
 >>> Web Frontend
@@ -19,3 +19,9 @@ Built with JavaScript and React.JS, I don't know how to code websites.
 - Guix System users: `guix shell -m manifest.scm`
 - Others: Install Racket programming language and Node.JS on your favorite
   operating system.
+
+You also need a MPD server running locally, and don't forget to change the
+hardcoded URLs in `web/src/App.js`.
+
+To run the server, simply execute `racket ./server.rkt <PORT>`. The server will
+start listening on `0.0.0.0:<PORT>`.
