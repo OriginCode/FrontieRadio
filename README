@@ -16,7 +16,7 @@ Built with JavaScript and React.JS, I don't know how to code websites.
 
 >>> Development and Deployment Prerequisites
 
-- Guix System users: `guix shell -m manifest.scm`
+- Guix users: `guix shell -m manifest.scm`
 - Others: Install Racket programming language and Node.JS on your favorite
   operating system.
 
