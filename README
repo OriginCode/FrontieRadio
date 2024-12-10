@@ -1,0 +1,15 @@
+[ FrontieRadio ]
+
+>>> Server
+
+Built with Racket, a MPD abstraction layer can be found in `mpd.rkt`, in case
+anyone needs a MPD protocol library in Racket, you can easily modify the code to
+support more MPD protocol standards.
+
+`server.rkt` includes a simple WebSocket server that updates information
+(current and next song information) and send the information overtime with a
+WebSocket connection.
+
+>>> Web Frontend
+
+Built with JavaScript and React.JS, I don't know how to code websites.
