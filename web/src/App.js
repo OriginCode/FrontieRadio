@@ -11,16 +11,22 @@ function App() {
     const playOrPause = () => setPlaying(!playing);
     audio.addEventListener("ended", () => setPlaying(false));
     audio.addEventListener("pause", () => setPlaying(false));
-    navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
-    navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
+    if ("mediaSession" in navigator) {
+        navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
+        navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
+    }
     useEffect(() => {
             if (playing) {
                 audio.play();
                 audio.muted = false;
-                navigator.mediaSession.playbackState = "playing";
+                if ("mediaSession" in navigator) {
+                    navigator.mediaSession.playbackState = "playing";
+                }
             } else {
                 audio.muted = true;
-                navigator.mediaSession.playbackState = "paused";
+                if ("mediaSession" in navigator) {
+                    navigator.mediaSession.playbackState = "paused";
+                }
             }
         },
         [audio, playing]
@@ -45,10 +51,12 @@ function App() {
     ) : null;
     useEffect(() => {
         console.log(lastMessage);
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: current ? current.Title : "FrontieRadio",
-            artist: current ? current.Artist : "Unknown",
-        });
+        if ("mediaSession" in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: current ? current.Title : "FrontieRadio",
+                artist: current ? current.Artist : "Unknown",
+            });
+        }
     }, [lastMessage, current]);
 
     return (
