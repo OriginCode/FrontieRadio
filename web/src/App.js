@@ -9,17 +9,22 @@ function App() {
     const [audio] = useState(new Audio(AUDIO_URL));
     const [playing, setPlaying] = useState(false);
     const playOrPause = () => setPlaying(!playing);
+    audio.addEventListener("ended", () => setPlaying(false));
+    audio.addEventListener("pause", () => setPlaying(false));
+    navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
+    navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
     useEffect(() => {
-            playing ? audio.play() : audio.pause();
+            if (playing) {
+                audio.play();
+                audio.muted = false;
+                navigator.mediaSession.playbackState = "playing";
+            } else {
+                audio.muted = true;
+                navigator.mediaSession.playbackState = "paused";
+            }
         },
         [audio, playing]
     );
-    useEffect(() => {
-        audio.addEventListener('ended', () => setPlaying(false));
-        return () => {
-            audio.removeEventListener('ended', () => setPlaying(false));
-        };
-    }, [audio]);
 
     const {lastMessage} = useWebSocket(WS_URL,
         {
@@ -31,10 +36,20 @@ function App() {
             },
             shouldReconnect: () => true,
         });
+    let lastMessageData = lastMessage ? JSON.parse(lastMessage.data) : null;
+    let current = lastMessageData ? (
+        Object.keys(lastMessageData.current).length !== 0 ? lastMessageData.current : null
+    ) : null;
+    let next = lastMessageData ? (
+        Object.keys(lastMessageData.next).length !== 0 ? lastMessageData.next : null
+    ) : null;
     useEffect(() => {
         console.log(lastMessage);
-    }, [lastMessage]);
-    let lastMessageData = lastMessage ? JSON.parse(lastMessage.data) : null;
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: current ? current.Title : "FrontieRadio",
+            artist: current ? current.Artist : "Unknown",
+        });
+    }, [lastMessage, current]);
 
     return (
         <div className="App">
@@ -45,10 +60,8 @@ function App() {
                             NOW PLAYING:
                         </div>
                         <div className="content">
-                            {lastMessageData ?
-                                (Object.keys(lastMessageData.current).length !== 0 ?
-                                    lastMessageData.current.Artist + " - " + lastMessageData.current.Title 
-                                    : "No song playing")
+                            {current ?
+                                `${current.Artist} - ${current.Title}`
                                 : "No song playing"}
                         </div>
                     </div>
@@ -57,16 +70,14 @@ function App() {
                             NEXT SONG:
                         </div>
                         <div className="content">
-                            {lastMessageData ?
-                                (Object.keys(lastMessageData.next).length !== 0 ?
-                                    lastMessageData.next.Artist + " - " + lastMessageData.next.Title
-                                    : "No next song")
-                                : "No next song"}
+                            {next ?
+                                `${next.Artist} - ${next.Title}`
+                                : "No song playing"}
                         </div>
                     </div>
                 </div>
                 <div className="flex-item">
-                    <button onClick={playOrPause}>{playing ? "Pause" : "Play"}</button>
+                    <button onClick={playOrPause}>{playing ? "Mute" : "Play"}</button>
                 </div>
             </div>
             <div className="flex-item about">
