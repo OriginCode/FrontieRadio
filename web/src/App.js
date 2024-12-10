@@ -1,6 +1,7 @@
 import './App.css';
 import React, {useEffect, useState} from "react";
 import useWebSocket from "react-use-websocket";
+import ReactAudioSpectrum from "react-audio-spectrum";
 
 function App() {
     const AUDIO_URL = "https://radio-raw.origincode.me/";
@@ -11,6 +12,7 @@ function App() {
     const playOrPause = () => setPlaying(!playing);
     audio.addEventListener("ended", () => setPlaying(false));
     audio.addEventListener("pause", () => setPlaying(false));
+    audio.crossOrigin = "anonymous";
     if ("mediaSession" in navigator) {
         navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
         navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
@@ -87,6 +89,17 @@ function App() {
                 <div className="flex-item">
                     <button onClick={playOrPause}>{playing ? "Mute" : "Play"}</button>
                 </div>
+                <ReactAudioSpectrum
+                    id="audio-canvas"
+                    height={100}
+                    width={317}
+                    meterWidth={5}
+                    meterColor={[
+                        {stop: 0, color: "#83a598"},
+                    ]}
+                    capColor="#8ec07c"
+                    gap={3}
+                    audioEle={audio} />
             </div>
             <div className="flex-item about">
                 <a href="https://radio-raw.origincode.me/">Raw</a>
