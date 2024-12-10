@@ -41,6 +41,7 @@
 		(define mpd-info (async-channel-try-get mpd-channel))
                 (when mpd-info
 		  (ws-send! c (jsexpr->bytes mpd-info)))
+		(sleep 1)
                 (loop)))))
   (let loop ()
     (match (ws-recv c #:payload-type 'text)
@@ -51,7 +52,8 @@
        (loop)]))
   (displayln (format "~a: connection lost" id))
   (kill-thread worker)
-  (ws-close! c))
+  (ws-close! c)
+  (set! clients (sub1 clients)))
 
 (define stop-service
   (ws-serve #:port (string->number (vector-ref (current-command-line-arguments)
