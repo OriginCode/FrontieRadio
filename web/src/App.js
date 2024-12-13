@@ -64,6 +64,9 @@ function App() {
     return (
         <div className="App">
             <div className="main">
+                <div className="header">
+                    FrontieRadio :: ON AIR
+                </div>
                 <div className="info">
                     <div className="flex-item">
                         <div className="header">
@@ -86,9 +89,7 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div className="flex-item">
-                    <button onClick={playOrPause}>{playing ? "Mute" : "Play"}</button>
-                </div>
+                <button onClick={playOrPause}>{playing ? "Mute" : "Play"}</button>
                 <ReactAudioSpectrum
                     id="audio-canvas"
                     height={100}
@@ -99,7 +100,7 @@ function App() {
                     ]}
                     capColor="#8ec07c"
                     gap={3}
-                    audioEle={audio} />
+                    audioEle={audio}/>
             </div>
             <div className="flex-item about">
                 <a href="https://radio-raw.origincode.me/">Raw</a>
