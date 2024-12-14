@@ -3,9 +3,10 @@ import React, {useEffect, useState} from "react";
 import useWebSocket from "react-use-websocket";
 import ReactAudioSpectrum from "react-audio-spectrum";
 
-function Info() {
-    const WS_URL = "wss://radio-api.origincode.me/";
+const WS_URL = "wss://radio-api.origincode.me/";
+const AUDIO_URL = "https://radio-raw.origincode.me/";
 
+function Info() {
     const {lastMessage} = useWebSocket(WS_URL, {
         heartbeat: {
             message: "ping", returnMessage: "pong", timeout: 30000, interval: 5000,
@@ -70,8 +71,6 @@ function VolumeSlider({audio}) {
 }
 
 function App() {
-    const AUDIO_URL = "https://radio-raw.origincode.me/";
-
     const [audio] = useState(new Audio(AUDIO_URL));
     const [playing, setPlaying] = useState(false);
     const playOrPause = () => setPlaying(!playing);
