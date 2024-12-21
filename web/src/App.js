@@ -23,23 +23,31 @@ function Info() {
         }
     }, [lastMessage, current]);
 
+    const infoContent = (infoData, placeholder) => {
+        let text = infoData ? (
+            `${infoData.Artist ? infoData.Artist : "Unknown"}
+            - ${infoData.Title ? infoData.Title : "Unknown"}`
+        ) : placeholder;
+        return (
+            <div className="content">
+                {text}
+            </div>
+        )
+    }
+
     return (
         <div className="info">
             <div className="flex-item">
                 <div className="header">
                     NOW PLAYING:
                 </div>
-                <div className="content">
-                    {current ? `${current.Artist} - ${current.Title}` : "No song playing"}
-                </div>
+                {infoContent(current, "No song playing")}
             </div>
             <div className="flex-item">
                 <div className="header">
                     NEXT SONG:
                 </div>
-                <div className="content">
-                    {next ? `${next.Artist} - ${next.Title}` : "No song playing"}
-                </div>
+                {infoContent(next, "No next song")}
             </div>
         </div>
     )
@@ -101,6 +109,10 @@ function Player() {
         }
     }, [audio, playing]);
 
+    let style = window.getComputedStyle(document.body);
+    let titleColor = style.getPropertyValue("--title-color");
+    let textColor = style.getPropertyValue("--text-color");
+
     return (
         <>
             <button onClick={playOrPause}>{playing ? "Stop" : "Play"}</button>
@@ -111,8 +123,8 @@ function Player() {
                     height={100}
                     width={317}
                     meterWidth={5}
-                    meterColor={[{stop: 0, color: "#83a598"},]}
-                    capColor="#8ec07c"
+                    meterColor={[{stop: 0, color: titleColor},]}
+                    capColor={textColor}
                     gap={3}
                     audioEle={audio}/>
             </button>
