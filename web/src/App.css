@@ -1,10 +1,17 @@
+:root {
+    --bg-color: #1d2021;
+    --title-color: #83a598;
+    --text-color: #8ec07c;
+    --fg-color: #ebdbb2;
+}
+
 * {
     font-family: 'Sarasa Fixed J', 'Iosevka', monospace;
     font-size: 20px;
 }
 
 body {
-    background-color: #1d2021;
+    background-color: var(--bg-color);
 }
 
 main {
@@ -36,13 +43,13 @@ main {
 }
 
 .header {
-    color: #83a598;
+    color: var(--title-color);
     font-weight: bold;
     text-align: center;
 }
 
 .content {
-    color: #8ec07c;
+    color: var(--text-color);
     text-align: center;
 }
 
@@ -56,8 +63,8 @@ button {
     background: none;
     border: none;
     text-decoration: underline;
-    text-underline: #83a598;
-    color: #83a598;
+    color: var(--title-color);
+    text-underline: var(--title-color);
 }
 
 button:hover {
@@ -66,10 +73,10 @@ button:hover {
 }
 
 a {
-    color: #83a598;
     font-size: .8em;
     text-decoration: underline;
-    text-underline: #83a598;
+    color: var(--title-color);
+    text-underline: var(--title-color);
 }
 
 a:hover {
@@ -88,7 +95,7 @@ input[type="range"] {
 }
 
 input[type="range"]::-moz-range-track {
-    background-color: #83a598;
+    background-color: var(--title-color);
     height: 5px;
 }
 
@@ -96,12 +103,12 @@ input[type="range"]::-moz-range-thumb {
     height: 15px;
     width: 5px;
     border-radius: 0;
-    background-color: #ebdbb2;
+    background-color: var(--fg-color);
     border: none;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-    background-color: #83a598;
+    background-color: var(--title-color);
     height: 5px;
 }
 
@@ -110,7 +117,7 @@ input[type="range"]::-webkit-slider-thumb {
     height: 15px;
     width: 5px;
     border-radius: 0;
-    background-color: #ebdbb2;
+    background-color: var(--fg-color);
     border: none;
     margin-top: -5px;
 }
