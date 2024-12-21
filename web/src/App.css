@@ -6,7 +6,7 @@
 }
 
 * {
-    font-family: 'Sarasa Fixed J', 'Iosevka', monospace;
+    font-family: 'Sarasa Fixed J', 'Iosevka', 'JetBrains Mono', 'Noto Sans CJK J', monospace;
     font-size: 20px;
 }
 
