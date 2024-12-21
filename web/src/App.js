@@ -76,20 +76,26 @@ function App() {
     const playOrPause = () => setPlaying(!playing);
     audio.addEventListener("ended", () => setPlaying(false));
     audio.addEventListener("pause", () => setPlaying(false));
+    audio.addEventListener("loadeddata", () => {
+        if (playing) {
+            audio.play();
+        }
+    });
     audio.crossOrigin = "anonymous";
+    audio.preload = "none";
     if ("mediaSession" in navigator) {
         navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
         navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
     }
     useEffect(() => {
         if (playing) {
-            audio.play();
-            audio.muted = false;
+            audio.load();
             if ("mediaSession" in navigator) {
                 navigator.mediaSession.playbackState = "playing";
             }
         } else {
-            audio.muted = true;
+            audio.pause();
+            audio.currentTime = 0;
             if ("mediaSession" in navigator) {
                 navigator.mediaSession.playbackState = "paused";
             }
@@ -103,9 +109,10 @@ function App() {
                     FrontieRadio :: ON AIR
                 </header>
                 <Info/>
-                <button onClick={playOrPause}>{playing ? "Mute" : "Play"}</button>
+                <button onClick={playOrPause}>{playing ? "Stop" : "Play"}</button>
                 <VolumeSlider audio={audio}/>
-                <ReactAudioSpectrum
+                <button onClick={playOrPause}>
+                    <ReactAudioSpectrum
                     id="audio-canvas"
                     height={100}
                     width={317}
@@ -114,6 +121,7 @@ function App() {
                     capColor="#8ec07c"
                     gap={3}
                     audioEle={audio}/>
+                </button>
             </main>
             <footer className="flex-item about">
                 <a href="https://radio-raw.origincode.me/">Raw</a>
