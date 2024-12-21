@@ -16,7 +16,6 @@ function Info() {
     let current = lastMessageData ? (Object.keys(lastMessageData.current).length !== 0 ? lastMessageData.current : null) : null;
     let next = lastMessageData ? (Object.keys(lastMessageData.next).length !== 0 ? lastMessageData.next : null) : null;
     useEffect(() => {
-        console.log(lastMessage);
         if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: current ? current.Title : "FrontieRadio", artist: current ? current.Artist : "Unknown",
@@ -70,7 +69,7 @@ function VolumeSlider({audio}) {
     );
 }
 
-function App() {
+function Player() {
     const [audio] = useState(new Audio(AUDIO_URL));
     const [playing, setPlaying] = useState(false);
     const playOrPause = () => setPlaying(!playing);
@@ -103,16 +102,11 @@ function App() {
     }, [audio, playing]);
 
     return (
-        <div className="App">
-            <main>
-                <header className="header">
-                    FrontieRadio :: ON AIR
-                </header>
-                <Info/>
-                <button onClick={playOrPause}>{playing ? "Stop" : "Play"}</button>
-                <VolumeSlider audio={audio}/>
-                <button onClick={playOrPause}>
-                    <ReactAudioSpectrum
+        <>
+            <button onClick={playOrPause}>{playing ? "Stop" : "Play"}</button>
+            <VolumeSlider audio={audio}/>
+            <button onClick={playOrPause}>
+                <ReactAudioSpectrum
                     id="audio-canvas"
                     height={100}
                     width={317}
@@ -121,7 +115,20 @@ function App() {
                     capColor="#8ec07c"
                     gap={3}
                     audioEle={audio}/>
-                </button>
+            </button>
+        </>
+    )
+}
+
+function App() {
+    return (
+        <div className="App">
+            <main>
+                <header className="header">
+                    FrontieRadio :: ON AIR
+                </header>
+                <Info/>
+                <Player/>
             </main>
             <footer className="flex-item about">
                 <a href="https://radio-raw.origincode.me/">Raw</a>
