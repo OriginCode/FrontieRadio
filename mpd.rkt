@@ -22,7 +22,7 @@
 (define/contract (mpd-connect [hostname "localhost"] [port 6600])
   (->* () (string? port-number?) mpd-connection?)
   (define-values (in-port out-port) (tcp-connect hostname port))
-  (read-line in-port)
+  (read-line in-port 'any)
   (file-stream-buffer-mode out-port 'line)
   (mpd-connection in-port out-port))
 
@@ -57,7 +57,7 @@
   (-> mpd-connection?
       (listof string?)
       (listof (hash/c symbol? (or/c string? number?))))
-  (define line (read-line (mpd-connection-in-port connection)))
+  (define line (read-line (mpd-connection-in-port connection) 'any))
   (match line
     ["OK" (mpd-parse-response lines)]
     [(regexp #rx"^ACK (.*)" (list _ errmsg)) (error 'mpd-fetch-response errmsg)]
@@ -80,13 +80,13 @@
        (exact-nonnegative-integer?)
        (or/c (listof (hash/c symbol? (or/c string? number?)))
              (hash/c symbol? (or/c string? number?))))
-  (if pos
-      (let ([playlistinfo (mpd-command connection
-                                       (format "playlistinfo ~a" pos))])
-        (if (null? playlistinfo)
-            (hash)
-            (car playlistinfo)))
-      (mpd-command connection "playlistinfo")))
+  (cond
+    [pos
+     (define playlistinfo (mpd-command connection (format "playlistinfo ~a" pos)))
+     (if (null? playlistinfo)
+         (hash)
+         (car playlistinfo))]
+    [else (mpd-command connection "playlistinfo")]))
 
 (define/contract (mpd-status connection)
   (-> mpd-connection? (hash/c symbol? (or/c string? number?)))
