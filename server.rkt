@@ -11,7 +11,8 @@
 (define clients 0)
 
 (define mpd-channel (make-async-channel))
-(define mpd-conn (mpd-connect))
+(define mpd-conn
+  (mpd-connect (or (vector-ref (current-command-line-arguments) 1) "localhost")))
 
 (define (resp-info)
   (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
