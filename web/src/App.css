@@ -72,8 +72,12 @@ button:hover {
     cursor: pointer;
 }
 
+footer {
+    font-size: .8rem;
+}
+
 a {
-    font-size: .8em;
+    font-size: .8rem;
     text-decoration: underline;
     color: var(--title-color);
     text-underline: var(--title-color);
