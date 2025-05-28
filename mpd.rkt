@@ -48,7 +48,7 @@
    (list)
    (for/list ([line lines])
      (match line
-       [(regexp #rx"^(.+): (.+)$" (list _ key val))
+       [(pregexp #px"^(.+):\\s*(.*)$" (list _ key val))
         (cons (string->symbol key)
               (let ([num (string->number val)]) (if num num val)))]
        [x (error 'mpd-parse-response (format "failed to parse response from MPD: ~a" x))]))))
