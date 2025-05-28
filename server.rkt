@@ -12,7 +12,7 @@
 
 (define mpd-channel (make-async-channel))
 (define mpd-conn
-  (mpd-connect (or (vector-ref (current-command-line-arguments) 1) "localhost")))
+  (mpd-connect (if (> (vector-length (current-command-line-arguments)) 1) (vector-ref (current-command-line-arguments) 1) "localhost")))
 
 (define (resp-info)
   (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
