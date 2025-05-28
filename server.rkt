@@ -12,7 +12,9 @@
 
 (define mpd-channel (make-async-channel))
 (define mpd-conn
-  (mpd-connect (if (> (vector-length (current-command-line-arguments)) 1) (vector-ref (current-command-line-arguments) 1) "localhost")))
+  (mpd-connect (if (> (vector-length (current-command-line-arguments)) 1)
+                   (vector-ref (current-command-line-arguments) 1)
+                   "localhost")))
 
 (define (resp-info)
   (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
@@ -23,8 +25,7 @@
               (unless (mpd-connection-alive? mpd-conn)
                 (set! mpd-conn (mpd-connect)))
               (define currinfo (resp-info))
-              (when (and (not (equal? previnfo currinfo))
-                         (positive? clients))
+              (when (and (not (equal? previnfo currinfo)) (positive? clients))
                 (displayln (format "mpd: updating info ~a" currinfo))
                 (async-channel-put mpd-channel currinfo))
               (sleep 1)

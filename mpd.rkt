@@ -51,7 +51,7 @@
        [(regexp #rx"^(.+): (.+)$" (list _ key val))
         (cons (string->symbol key)
               (let ([num (string->number val)]) (if num num val)))]
-       [_ (error 'mpd-parse-response "failed to parse response from MPD")]))))
+       [x (error 'mpd-parse-response (format "failed to parse response from MPD: ~a" x))]))))
 
 (define/contract (mpd-fetch-response connection lines)
   (-> mpd-connection?
