@@ -84,7 +84,7 @@ function Player() {
     audio.addEventListener("ended", () => setPlaying(false));
     audio.addEventListener("pause", () => setPlaying(false));
     audio.addEventListener("loadeddata", () => {
-        if (playing) {
+        if (playing && audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
             audio.play();
         }
     });
