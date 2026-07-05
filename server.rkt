@@ -17,7 +17,8 @@
                    "localhost")))
 
 (define (resp-info)
-  (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)))
+  (hash 'current (mpd-currentsong mpd-conn) 'next (mpd-nextsong mpd-conn)
+        'clients clients))
 
 (define mpd-worker
   (thread (λ ()
