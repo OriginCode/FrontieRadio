@@ -6,13 +6,7 @@ import ReactAudioSpectrum from "react-audio-spectrum";
 const WS_URL = "wss://radio-api.origincode.me/";
 const AUDIO_URL = "https://radio-raw.origincode.me/";
 
-function Info() {
-    const {lastMessage} = useWebSocket(WS_URL, {
-        heartbeat: {
-            message: "ping", returnMessage: "pong", timeout: 30000, interval: 5000,
-        }, shouldReconnect: () => true,
-    });
-    let lastMessageData = lastMessage ? JSON.parse(lastMessage.data) : null;
+function Info({lastMessageData}) {
     let current = lastMessageData ? (Object.keys(lastMessageData.current).length !== 0 ? lastMessageData.current : null) : null;
     let next = lastMessageData ? (Object.keys(lastMessageData.next).length !== 0 ? lastMessageData.next : null) : null;
     useEffect(() => {
@@ -21,7 +15,7 @@ function Info() {
                 title: current ? current.Title : "FrontieRadio", artist: current ? current.Artist : "Unknown",
             });
         }
-    }, [lastMessage, current]);
+    }, [current]);
 
     const infoContent = (infoData, placeholder) => {
         let text = infoData ? (
@@ -133,13 +127,19 @@ function Player() {
 }
 
 function App() {
+    const {lastMessage} = useWebSocket(WS_URL, {
+        heartbeat: {
+            message: "ping", returnMessage: "pong", timeout: 30000, interval: 5000,
+        }, shouldReconnect: () => true,
+    });
+    let lastMessageData = lastMessage ? JSON.parse(lastMessage.data) : null;
     return (
         <div className="App">
             <main>
                 <header className="header">
                     FrontieRadio :: ON AIR
                 </header>
-                <Info/>
+                <Info lastMessageData={lastMessageData}/>
                 <Player/>
             </main>
             <footer className="flex-item content">
@@ -149,6 +149,9 @@ function App() {
             </footer>
             <footer className="flex-item content">
                 Made with <a href="https://racket-lang.org/">λ</a>
+            </footer>
+            <footer className="flex-item content">
+                Listeners: {lastMessageData ? lastMessageData.clients : 0}
             </footer>
         </div>
     );
