@@ -127,6 +127,21 @@ function Player() {
 }
 
 function App() {
+    const [isLight, setIsLight] = useState(false);
+    useEffect(() => {
+        const preferLight = window.matchMedia("(prefers-color-scheme: light)");
+        if (preferLight.matches) {
+            setIsLight(true);
+        }
+        preferLight.addEventListener("change", (event) => setIsLight(event.matches));
+    }, []);
+    useEffect(() => {
+        if (isLight) {
+            document.body.classList.add("light-theme");
+        } else {
+            document.body.classList.remove("light-theme");
+        }
+    }, [isLight]);
     const {lastMessage} = useWebSocket(WS_URL, {
         heartbeat: {
             message: "ping", returnMessage: "pong", timeout: 30000, interval: 5000,
@@ -149,6 +164,9 @@ function App() {
             </footer>
             <footer className="flex-item content">
                 Made with <a href="https://racket-lang.org/">λ</a>
+            </footer>
+            <footer className="flex-item content">
+                <button className="link" onClick={() => { setIsLight(!isLight); }}>{isLight ? "Dark" : "Light"}</button>
             </footer>
             <footer className="flex-item content">
                 Listeners: {lastMessageData ? lastMessageData.clients : 0}

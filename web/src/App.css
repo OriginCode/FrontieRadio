@@ -5,9 +5,18 @@
     --fg-color: #ebdbb2;
 }
 
+.light-theme {
+    --bg-color: #fbf1c7;
+    --title-color: #d79921;
+    --text-color: #b57614;
+    --fg-color: #3c3836;
+}
+
 * {
     font-family: 'M PLUS 1 Code', 'Sarasa Fixed J', 'Iosevka', 'JetBrains Mono', 'Noto Sans CJK J', monospace;
     font-size: 20px;
+    transition: background-color 0.2s cubic-bezier(0.25, 1, 0.25, 1), 
+                color 0.2s cubic-bezier(0.25, 1, 0.25, 1);
 }
 
 body {
@@ -73,6 +82,10 @@ button:hover {
 }
 
 footer {
+    font-size: .8rem;
+}
+
+button.link {
     font-size: .8rem;
 }
 
