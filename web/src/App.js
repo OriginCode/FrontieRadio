@@ -158,7 +158,7 @@ function App() {
                 <Player/>
             </main>
             <footer className="flex-item content">
-                <a href="https://radio-raw.origincode.me/">Raw</a>
+                <a href={AUDIO_URL}>Raw</a>
                 <a href="https://factoria.origincode.me/OriginCode/frontieradio">Factoria</a>
                 <a href="https://github.com/OriginCode/frontieradio">GitHub</a>
             </footer>
